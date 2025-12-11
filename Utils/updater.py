@@ -39,12 +39,18 @@ class Release:
 def get_tags(current_tag: str) -> list[str] | None:
     """
     Получает все теги с GitHub репозитория.
-    ОТКЛЮЧЕНО В ФОРКЕ: Обновления отключены.
-    
+
     :param current_tag: текущий тег.
-    :return: None (обновления отключены).
+    :return: список тегов или None в случае ошибки.
     """
-    return None
+    try:
+        response = requests.get("https://api.github.com/repos/qorexdev/FunPayCardinalFork/tags", headers=HEADERS)
+        response.raise_for_status()
+        tags = [tag["name"] for tag in response.json()]
+        return tags
+    except:
+        logger.debug("TRACEBACK", exc_info=True)
+        return None
 
 
 def get_next_tag(tags: list[str], current_tag: str):
@@ -71,23 +77,52 @@ def get_next_tag(tags: list[str], current_tag: str):
 def get_releases(from_tag: str) -> list[Release] | None:
     """
     Получает данные о доступных релизах, начиная с тега.
-    ОТКЛЮЧЕНО В ФОРКЕ: Обновления отключены.
 
     :param from_tag: тег релиза, с которого начинать поиск.
-    :return: None (обновления отключены).
+    :return: список релизов или None в случае ошибки.
     """
-    return None
+    try:
+        response = requests.get("https://api.github.com/repos/qorexdev/FunPayCardinalFork/releases", headers=HEADERS)
+        response.raise_for_status()
+        releases_data = response.json()
+        releases = []
+        for release in releases_data:
+            if release["tag_name"] == from_tag:
+                break
+            releases.append(Release(release["name"], release["body"], release["zipball_url"]))
+        return releases
+    except:
+        logger.debug("TRACEBACK", exc_info=True)
+        return None
 
 
 def get_new_releases(current_tag) -> int | list[Release]:
     """
     Проверяет на наличие обновлений.
-    ОТКЛЮЧЕНО В ФОРКЕ: Обновления отключены.
 
     :param current_tag: тег текущей версии.
-    :return: 2 - текущий тег является последним (обновления отключены).
+    :return: список новых релизов или код ошибки.
     """
-    return 2  # Всегда возвращаем "текущая версия последняя"
+    tags = get_tags(current_tag)
+    if tags is None:
+        return 3  # Ошибка получения тегов
+
+    if current_tag not in tags:
+        # Если текущий тег не найден, считаем его устаревшим и возвращаем последний релиз
+        releases = get_releases("")
+        if releases is None:
+            return 3
+        return releases
+
+    next_tag = get_next_tag(tags, current_tag)
+    if next_tag is None:
+        return 2  # Текущий тег последний
+
+    releases = get_releases(next_tag)
+    if releases is None:
+        return 3  # Ошибка получения релизов
+
+    return releases
 
 
 #  Загрузка нового релиза

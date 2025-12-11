@@ -57,3 +57,14 @@
 ## :information_source: О форке
 
 Форк с улучшенной анонимностью, и более обшиирными обновлениями и функциями.
+
+## :busts_in_silhouette: Разработчики
+
+- [@qorexdev](https://github.com/qorexdev)
+- [@sidor0912](https://github.com/sidor0912)
+
+## :speech_balloon: Контакты
+
+- **Чат:** [t.me/fpcforkchat](https://t.me/fpcforkchat)
+- **Канал:** [t.me/fpcfork](https://t.me/fpcfork)
+- **Репозиторий:** [github.com/qorexdev/FunPayCardinalFork](https://github.com/qorexdev/FunPayCardinalFork)
